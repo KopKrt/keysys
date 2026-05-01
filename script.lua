@@ -22,13 +22,6 @@ end
 -------------------------------------------------------------------------------
 -- 👇 YOUR MAIN SCRIPT CODE STARTS HERE 👇
 -------------------------------------------------------------------------------
-
-print(ProtectionConfig.HubName .. " Loaded Successfully!")
-
-repeat
-    task.wait()
-until game:IsLoaded() and game.Players.LocalPlayer
-
 local _ENV = (getgenv or getrenv or getfenv)()
 
 do 
