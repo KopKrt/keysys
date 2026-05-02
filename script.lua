@@ -1,3 +1,26 @@
+local ProtectionConfig = {
+    -- 🔴 CRITICAL: This MUST exactly match the 'Secret' value in your Key System's Config!
+    -- If your Key System has: Secret = "Test"
+    -- Then this must also be: SecretKey = "Test"
+    SecretKey = "kkop2610",
+    
+    -- The name of your Hub (shown in the kick message if they try to bypass)
+    HubName = "AOI HUB"
+}
+
+-- Anti-Bypass Logic: Checks if the Key System successfully set the global variable
+if not _G[ProtectionConfig.SecretKey] then
+    local player = game:GetService("Players").LocalPlayer
+    if player then
+        player:Kick("\n🛡️ Unauthorized Execution 🛡️\n\nPlease use the official Key System to run " .. ProtectionConfig.HubName)
+    end
+    return -- Stops the rest of the script from loading!
+end
+
+repeat
+    task.wait()
+until game:IsLoaded() and game.Players.LocalPlayer
+
 local _ENV = (getgenv or getrenv or getfenv)()
 
 do 
@@ -473,7 +496,7 @@ do
     end
 
     local Settings = {
-        Play = false, -- Changed to false so script starts disabled
+        Play = true,
     }
 
     local function NewOption(Flag, Function, Interval)
@@ -618,75 +641,40 @@ do
         end)
     end
     
-    -- ===== BUTTON UI =====
-    local CoreGui = game:GetService('CoreGui')
+    local Auto = game:GetService('CoreGui'):FindFirstChild('Auto') do
+        if Auto then Auto:Destroy() end
+    end
     
-    -- Clean up old UI if it exists
-    local oldAuto = CoreGui:FindFirstChild('Auto')
-    if oldAuto then oldAuto:Destroy() end
+    local Auto_1 = Instance.new("ScreenGui")
+    local Black_1 = Instance.new("Frame")
+    local TextLabel_1 = Instance.new("TextLabel")
+
+    Auto_1.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
+    Auto_1.IgnoreGuiInset = true
+    Auto_1.Name = "Auto"
+    Auto_1.Parent = game:GetService('CoreGui')
+    Auto_1.ZIndexBehavior = Enum.ZIndexBehavior.Global
+
+    Black_1.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Black_1.BackgroundTransparency = 0.5
+    Black_1.Name = "Black"
+    Black_1.Parent = Auto_1
+    Black_1.Size = UDim2.new(1, 0, 1, 0)
+    Black_1.Selectable = false
+
+    TextLabel_1.AnchorPoint = Vector2.new(0.5, 0.5)
+    TextLabel_1.BackgroundTransparency = 1
+    TextLabel_1.Parent = Black_1
+    TextLabel_1.Position = UDim2.new(0.5, 0, 0.5, 0)
+    TextLabel_1.Size = UDim2.new(1, 0, 0, 50)
+    TextLabel_1.Selectable = false
+    TextLabel_1.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+    TextLabel_1.RichText = true
+    TextLabel_1.Text = "Unknow : 404"
+    TextLabel_1.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TextLabel_1.TextSize = 25
+    TextLabel_1.TextStrokeTransparency = 0.5
     
-    -- Create main ScreenGui
-    local Auto = Instance.new("ScreenGui")
-    Auto.Name = "Auto"
-    Auto.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
-    Auto.IgnoreGuiInset = true
-    Auto.Parent = CoreGui
-    Auto.ZIndexBehavior = Enum.ZIndexBehavior.Global
-    
-    -- Create toggle button
-    local ToggleButton = Instance.new("TextButton")
-    ToggleButton.Name = "ToggleButton"
-    ToggleButton.Size = UDim2.new(0, 120, 0, 50)
-    ToggleButton.Position = UDim2.new(0.5, -60, 0, 10)
-    ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-    ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ToggleButton.TextSize = 18
-    ToggleButton.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold)
-    ToggleButton.Text = "OFF"
-    ToggleButton.Parent = Auto
-    ToggleButton.BorderSizePixel = 0
-    
-    -- Add corner radius to button
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 8)
-    UICorner.Parent = ToggleButton
-    
-    -- Create status text label
-    local StatusLabel = Instance.new("TextLabel")
-    StatusLabel.Name = "StatusLabel"
-    StatusLabel.Size = UDim2.new(1, 0, 0, 50)
-    StatusLabel.Position = UDim2.new(0, 0, 0, 70)
-    StatusLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    StatusLabel.TextSize = 16
-    StatusLabel.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular)
-    StatusLabel.Text = "Idle"
-    StatusLabel.TextStrokeTransparency = 0.5
-    StatusLabel.Parent = Auto
-    StatusLabel.BorderSizePixel = 0
-    
-    -- Button click handler
-    ToggleButton.MouseButton1Click:Connect(function()
-        Settings.Play = not Settings.Play
-        
-        if Settings.Play then
-            ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-            ToggleButton.Text = "ON"
-        else
-            ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-            ToggleButton.Text = "OFF"
-            -- Reset script state when turned off
-            Highligh.Parent = nil
-            Highligh.Adornee = nil
-            Cached = nil
-            CurrentTarget = nil
-            IsRunning = false
-            IsPatrolling = false
-            StatusLabel.Text = "Idle"
-        end
-    end)
-    
-    -- Main loop
     Connect(RunService.Stepped, function()
         if not Settings["Play"] then return end
         
@@ -703,7 +691,7 @@ do
             CurrentTarget = nil
             IsRunning = false
             IsPatrolling = false
-            StatusLabel.Text = "Dead"
+            TextLabel_1.Text = "You are Dead ..."
             return
         end
 
@@ -719,7 +707,7 @@ do
             local Tool = Backpack:FindFirstChild('Revolver')
             
             if Tool then
-                StatusLabel.Text = "Equipping..."
+                TextLabel_1.Text = "Equip the Revolver ..."
                 Humanoid:EquipTool(Tool)
             end
             
@@ -727,7 +715,7 @@ do
         end
 
         if not Cached then
-            StatusLabel.Text = "Setting up..."
+            TextLabel_1.Text = "Set Pathfinding ..."
             SetupCached(Character)
         end
 
@@ -742,7 +730,7 @@ do
 
             if Target then
                 Camera.CFrame = CFrame.lookAt(Camera.CFrame.Position, Target.Position)
-                StatusLabel.Text = "Firing at " .. tostring(Target.Parent.Name)
+                TextLabel_1.Text = "Fire " .. tostring(Target.Parent)
             end
 
             VirtualUser:Button1Down(Vector2.new(0, 0), Camera.CFrame)
@@ -769,7 +757,7 @@ do
         local Target = CurrentTarget
 
         if not Target then
-            StatusLabel.Text = "Hunting..."
+            TextLabel_1.Text = "Hunt Players"
 
             Highligh.Parent = nil
             Highligh.Adornee = nil
@@ -787,7 +775,7 @@ do
             IsRunning = true
 
             task.spawn(function()
-                StatusLabel.Text = "Walking to " .. tostring(Target.Parent.Name)
+                TextLabel_1.Text = "Walk to " .. tostring(Target.Parent)
                 
                 local success, err = pcall(function()
                     Cached:Run(Target)
