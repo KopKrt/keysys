@@ -1,18 +1,3 @@
-local ProtectionConfig = {
-    SecretKey = "kkop2610",
-    HubName = "AOI"
-}
-
-if not _G[ProtectionConfig.SecretKey] then
-    local player = game:GetService("Players").LocalPlayer
-    if player then
-        player:Kick("\n🛡️ Unauthorized Execution 🛡️\n\nPlease use the official Key System to run " .. ProtectionConfig.HubName)
-    end
-    return
-end
-
-print(ProtectionConfig.HubName .. " Loaded Successfully!")
-
 local _ENV = (getgenv or getrenv or getfenv)()
 
 do 
